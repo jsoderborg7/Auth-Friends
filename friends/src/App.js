@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Link, Switch} from 'react-router-dom';
 
 import Login from './components/Login';
 import FriendList from './components/FriendList';
@@ -10,11 +10,15 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <button><Link to='/login'>Login</Link></button>
-        <button><Link to='/protected'>Friend List</Link></button>
-
-        <Route path ='/login' component={Login} />
-        <PrivateRoute exact path='/protected' component={FriendList} />
+        <ul>
+          <li><Link to='/login'>Login</Link></li>
+          <li><Link to='/protected'>Friends</Link></li>
+        </ul>
+        <Switch>
+          <Route path ='/login' component={Login} />
+          <Route component={Login} />
+          <PrivateRoute exact path='/protected' component={FriendList} />
+        </Switch>
       </div>
     </Router>
   );
