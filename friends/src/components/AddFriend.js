@@ -1,68 +1,66 @@
-import React, {useState, useEffect} from 'react';
-import { Form, Field, withFormik } from 'formik'
-import * as Yup from 'yup';
+import React from 'react';
+import {axiosWithAuth} from '../utils/axiosWithAuth';
 
-import { axiosWithAuth } from '../utils/axiosWithAuth';
-
-const AddFriend = ({ status }) => {
-  const [friend, setFriend] = useState([])
-  console.log(friend);
-
-  useEffect(() =>{
-    if (status) {
-      setFriend(friend => status)
+class AddFriend extends React.Component {
+  state ={
+    friend: {
+      id: '',
+      name: '',
+      age: '',
+      email: ''
     }
-  },[status])
+  };
 
-  return (
-    <div>
-      <h2>Add Friend!</h2>
-      <Form>
-          <Field
-           type="text"
-           name="name" 
-           placeholder="Name" />
-          <Field 
-            type="number" 
-            name="age" 
-            placeholder="Age" />
-          <Field
-            type="text" 
-            name="email" 
-            placeholder="Email" />
-          <button type="submit">Add</button>
-      </Form>
-    </div>
-  )
+  handleChange = e =>{
+    this.setState({
+      friend:{
+        ...this.state.friend,
+        [e.target.name]: e.target.value
+      }
+    });
+  };
+
+  addFriend = e =>{
+    e.preventDefault();
+    axiosWithAuth()
+      .post('/friends', this.state.friend)
+      .then(res =>{
+        localStorage.setItem('friend', res.data.payload);
+        console.log('add friend',res.data)
+      })
+      .catch(err => console.log(err));
+  };
+
+  render(){
+    return(
+      <div>
+        <form onSubmit={this.addFriend}>
+          <input
+            type="text"
+            name='name'
+            value={this.state.friend.name}
+            onChange={this.handleChange}
+            placeholder='Name'
+          />
+          <input
+            type="text"
+            name='age'
+            value={this.state.friend.age}
+            onChange={this.handleChange}
+            placeholder='Age'
+          />
+          <input
+            type="email"
+            name='email'
+            value={this.state.friend.email}
+            onChange={this.handleChange}
+            placeholder='Email'
+          />
+          <button>Add Friend</button>
+        </form>
+      </div>
+    )
+  }
 }
 
-const FormikAddFriend = withFormik({
-  mapPropsToValues({ name, age, email }) {
-    return {
-      name: name || '',
-      age: age || '',
-      email: email || ''
-    }
-  },
-
-  validationSchema: Yup.object().shape({
-    name: Yup.string()
-      .required(),
-    age: Yup.number()
-      .required(),
-    email: Yup.string()
-      .email()
-      .required()
-  }),
-
-  handleSubmit(values, { setStatus }) {
-    axiosWithAuth()
-      .post('/friends', values)
-      .then(res => {
-        console.log(res);
-        setStatus(res.data)
-      })
-  }
-})(AddFriend)
-
-export default FormikAddFriend;
+export default AddFriend;
