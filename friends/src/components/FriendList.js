@@ -1,7 +1,7 @@
 import React from 'react';
 import {axiosWithAuth} from '../utils/axiosWithAuth';
 import FriendCard from './FriendCard';
-import AddFriend from './AddFriend';
+import FormikAddFriend from './AddFriend';
 
 class FriendList extends React.Component{
   state={
@@ -34,7 +34,7 @@ class FriendList extends React.Component{
             return <FriendCard name={friend.name} age={friend.age} email={friend.email} key={friend.id} /> 
           })};
         </div>
-          <AddFriend />
+          <FormikAddFriend />
       </div>
     );
   };
